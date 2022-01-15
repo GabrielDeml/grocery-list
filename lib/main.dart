@@ -69,6 +69,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late UserCredential userCredential;
   bool _checkBoxOne = false;
   bool _checkBoxTwo = false;
   bool _checkBoxThree = false;
@@ -106,9 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    UserCredential userCredential;
-    GoogleAuthProvider googleProvider = GoogleAuthProvider();
-
     signInWithGoogle().then((uc) {
       userCredential = uc;
       print(userCredential.user!.displayName);
@@ -116,10 +114,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // print(userCredential.user!.photoUrl);
       print(userCredential.user!.uid);
     });
-
-    googleProvider
-        .addScope('https://www.googleapis.com/auth/contacts.readonly');
-    googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -248,20 +242,26 @@ class _MyHomePageState extends State<MyHomePage> {
             style: optionStyle,
           ),
           Center(
-            child: FloatingActionButton(
-              child: const Text('Sign in'),
-              onPressed: () {
-                // Sign in with Google
-                signInWithGoogle().then((uc) {
-                  userCredential = uc;
-                  print(userCredential.user!.displayName);
-                  print(userCredential.user!.email);
-                  // print(userCredential.user!.photoUrl);
-                  print(userCredential.user!.uid);
-                });
-              },
-            ),
-          ),
+              child: Row(
+            children: const [
+              // Show uer's name
+              Text("Setting?")
+            ],
+          )
+              // child: FloatingActionButton(
+              //   child: const Text('Sign in'),
+              //   onPressed: () {
+              //     // Sign in with Google
+              //     signInWithGoogle().then((uc) {
+              //       userCredential = uc;
+              //       print(userCredential.user!.displayName);
+              //       print(userCredential.user!.email);
+              //       // print(userCredential.user!.photoUrl);
+              //       print(userCredential.user!.uid);
+              //     });
+              //   },
+              // ),
+              ),
         ].elementAt(_selectedIndex),
       ),
       floatingActionButton: FloatingActionButton(
