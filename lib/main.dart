@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_const
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -43,48 +45,21 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
-  
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  bool _checkBoxOne = false; 
+  // final List<Widget> _widgetOptions = 
 
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-    });
-  }
-
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
     });
   }
 
@@ -102,19 +77,19 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-       bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.list),
+            label: 'Shopping List',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Business',
+            icon: Icon(Icons.calendar_today),
+            label: 'Meal Planner',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'School',
+            icon: Icon(Icons.fastfood),
+            label: 'Meals',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -122,29 +97,38 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: _onItemTapped,
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: <Widget>[
+      ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(20),
+        children: [
+          Checkbox(
+            value: _checkBoxOne,
+            onChanged: (bool? value) {
+              setState(() {
+                _checkBoxOne = value!;
+              });
+            },
+          ),
+        ],
       ),
-      
-      // Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       ListView(
-      //         shrinkWrap: true,
-      //         padding: const EdgeInsets.all(20),
-      //         children: const [
-      //           Text("Hello World!"),
-      //           Text("Hello World!"),
-      //           Text("Hello World!"),
-      //           Text("Hello World!"),
-      //           Text("Hello World!"),
-      //         ],
-      //       ),
-      //     ],
-      //   ),
-      // ),
+      const Text(
+        'Index 1: Business',
+        style: optionStyle,
+      ),
+      const Text(
+        'Index 2: School',
+        style: optionStyle,
+      ),
+    ].elementAt(_selectedIndex),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+          // Add your onPressed code here!
+
+          // show the snackbar
+          
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
