@@ -71,6 +71,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late UserCredential userCredential;
+  bool isUserCredentialSet = false;
+  late CollectionReference database;
 
   bool _checkBoxOne = false;
   bool _checkBoxTwo = false;
@@ -107,207 +109,215 @@ class _MyHomePageState extends State<MyHomePage> {
     // return await FirebaseAuth.instance.signInWithRedirect(googleProvider);
   }
 
+  Future<void> addItem(
+      String itemName, int itemQuantity, bool isChecked) async {
+    return database
+        .add({
+          'itemName': itemName,
+          'itemQuantity': itemQuantity,
+          'isChecked': isChecked,
+        })
+        .then((value) => print("Item Added"))
+        .catchError((error) => print("Failed to add item: $error"));
+  }
+
   @override
   void initState() {
     super.initState();
     signInWithGoogle().then((UserCredential userCredential) {
       setState(() {
         this.userCredential = userCredential;
+        isUserCredentialSet = true;
         print(this.userCredential.user!.displayName);
         print(this.userCredential.user!.email);
         // print(userCredential.user!.photoUrl);
         print(this.userCredential.user!.uid);
+        database =
+            FirebaseFirestore.instance.collection(userCredential.user!.uid);
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Shopping List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Meal Planner',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fastfood),
-            label: 'Meals',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-      body: Center(
-        child: <Widget>[
-          ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(20),
-            children: [
-              // CheckboxListTile(
-              //   title: const Text('Checkbox One'),
-              //   value: _checkBoxOne,
-              //   onChanged: (bool value) {
-              //     setState(() {
-              //       _checkBoxOne = value!;
-              //     });
-              //   },
-              // ),
-              CheckboxListTile(
-                title: const Text('Checkbox One'),
-                value: _checkBoxOne,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _checkBoxOne = value!;
-                  });
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Checkbox Two'),
-                value: _checkBoxTwo,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _checkBoxTwo = value!;
-                  });
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Checkbox Three'),
-                value: _checkBoxThree,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _checkBoxThree = value!;
-                  });
-                },
-              ),
-              CheckboxListTile(
-                title: const Text('Checkbox Four'),
-                value: _checkBoxFour,
-                onChanged: (bool? value) {
-                  setState(() {
-                    _checkBoxFour = value!;
-                  });
-                },
-              ),
-            ],
-          ),
-          TableCalendar(
-            firstDay: DateTime(2020, 1, 1),
-            lastDay: DateTime(2022, 12, 31),
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            selectedDayPredicate: (day) {
-              // Use `selectedDayPredicate` to determine which day is currently selected.
-              // If this returns true, then `day` will be marked as selected.
+    return !isUserCredentialSet 
+        ? const Center(child: Text("Please sign in", style: TextStyle(fontSize: 30, color: Colors.green)))
+        : Scaffold(
+            appBar: AppBar(
+              // Here we take the value from the MyHomePage object that was created by
+              // the App.build method, and use it to set our appbar title.
+              title: Text(widget.title),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list),
+                  label: 'Shopping List',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_today),
+                  label: 'Meal Planner',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.fastfood),
+                  label: 'Meals',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
+            ),
+            body: Center(
+              child: <Widget>[
+                Scaffold(
+                  body: ListView(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.all(20),
+                    children: [
+                      CheckboxListTile(
+                        title: const Text('Checkbox One'),
+                        value: _checkBoxOne,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _checkBoxOne = value!;
+                          });
+                        },
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Checkbox Two'),
+                        value: _checkBoxTwo,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _checkBoxTwo = value!;
+                          });
+                        },
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Checkbox Three'),
+                        value: _checkBoxThree,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _checkBoxThree = value!;
+                          });
+                        },
+                      ),
+                      CheckboxListTile(
+                        title: const Text('Checkbox Four'),
+                        value: _checkBoxFour,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _checkBoxFour = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: () {
+                      addItem("Chicken", 2, _checkBoxOne);
+                    },
+                    tooltip: 'Add item',
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+                TableCalendar(
+                  firstDay: DateTime(2020, 1, 1),
+                  lastDay: DateTime(2022, 12, 31),
+                  focusedDay: _focusedDay,
+                  calendarFormat: _calendarFormat,
+                  selectedDayPredicate: (day) {
+                    // Use `selectedDayPredicate` to determine which day is currently selected.
+                    // If this returns true, then `day` will be marked as selected.
 
-              // Using `isSameDay` is recommended to disregard
-              // the time-part of compared DateTime objects.
-              return isSameDay(_selectedDay, day);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              if (!isSameDay(_selectedDay, selectedDay)) {
-                // Call `setState()` when updating the selected day
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                });
-              }
-            },
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                // Call `setState()` when updating calendar format
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
-            onPageChanged: (focusedDay) {
-              // No need to call `setState()` here
-              _focusedDay = focusedDay;
-            },
-          ),
-          const Text(
-            'Index 2: School',
-            style: optionStyle,
-          ),
-          Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Show uer's name
-              Text(
-                userCredential.user?.displayName ?? "",
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Theme.of(context).colorScheme.secondary),
-              ),
-              // Show user's email
-              Text(
-                userCredential.user?.email ?? "",
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Theme.of(context).colorScheme.secondary),
-              ),
-              TextButton(
-                child: userCredential.user!.isAnonymous
-                    ? const Text("Sign in with Google")
-                    : const Text("Sign out"),
-                onPressed: () {
-                  if (userCredential.user!.isAnonymous) {
-                    signInWithGoogle().then((UserCredential user) {
+                    // Using `isSameDay` is recommended to disregard
+                    // the time-part of compared DateTime objects.
+                    return isSameDay(_selectedDay, day);
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    if (!isSameDay(_selectedDay, selectedDay)) {
+                      // Call `setState()` when updating the selected day
                       setState(() {
-                        userCredential = user;
-                        print(userCredential.user!.displayName);
-                        print(userCredential.user!.email);
-                        // print(userCredential.user!.photoUrl);
-                        print(userCredential.user!.uid);
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
                       });
-                    });
-                  } else {
-                    // FirebaseAuth.instance.signOut();
-                    FirebaseAuth.instance
-                        .signInAnonymously()
-                        .then((user) {
+                    }
+                  },
+                  onFormatChanged: (format) {
+                    if (_calendarFormat != format) {
+                      // Call `setState()` when updating calendar format
                       setState(() {
-                        userCredential = user;
-                        print(userCredential.user!.displayName);
-                        print(userCredential.user!.email);
-                        // print(userCredential.user!.photoUrl);
-                        print(userCredential.user!.uid);
+                        _calendarFormat = format;
                       });
-                    });
+                    }
+                  },
+                  onPageChanged: (focusedDay) {
+                    // No need to call `setState()` here
+                    _focusedDay = focusedDay;
+                  },
+                ),
+                const Text(
+                  'Index 2: School',
+                  style: optionStyle,
+                ),
+                Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Show uer's name
+                    Text(
+                      userCredential.user?.displayName ?? "",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    // Show user's email
+                    Text(
+                      userCredential.user?.email ?? "",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    TextButton(
+                      child: userCredential.user!.isAnonymous
+                          ? const Text("Sign in with Google")
+                          : const Text("Sign out"),
+                      onPressed: () {
+                        if (userCredential.user!.isAnonymous) {
+                          signInWithGoogle().then((UserCredential user) {
+                            setState(() {
+                              userCredential = user;
+                              print(userCredential.user!.displayName);
+                              print(userCredential.user!.email);
+                              // print(userCredential.user!.photoUrl);
+                              print(userCredential.user!.uid);
+                            });
+                          });
+                        } else {
+                          // FirebaseAuth.instance.signOut();
+                          FirebaseAuth.instance
+                              .signInAnonymously()
+                              .then((user) {
+                            setState(() {
+                              userCredential = user;
+                              print(userCredential.user!.displayName);
+                              print(userCredential.user!.email);
+                              // print(userCredential.user!.photoUrl);
+                              print(userCredential.user!.uid);
+                            });
+                          });
 
-                    // Rebuild the widget after signing out
-                  }
-                },
-              ),
-            ],
-          )),
-        ].elementAt(_selectedIndex),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your onPressed code here!
-
-          // show the snackbar
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
+                          // Rebuild the widget after signing out
+                        }
+                      },
+                    ),
+                  ],
+                )),
+              ].elementAt(_selectedIndex),
+            ),
+          );
   }
 }
