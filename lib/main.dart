@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_const
 
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,8 +51,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _checkBoxOne = false; 
-  // final List<Widget> _widgetOptions = 
+  bool _checkBoxOne = false;
+  bool _checkBoxTwo = false;
+  bool _checkBoxThree = false;
+  bool _checkBoxFour = false;
+
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
 
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
@@ -98,36 +105,103 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: <Widget>[
-      ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(20),
-        children: [
-          Checkbox(
-            value: _checkBoxOne,
-            onChanged: (bool? value) {
-              setState(() {
-                _checkBoxOne = value!;
-              });
+          ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(20),
+            children: [
+              // CheckboxListTile(
+              //   title: const Text('Checkbox One'),
+              //   value: _checkBoxOne,
+              //   onChanged: (bool value) {
+              //     setState(() {
+              //       _checkBoxOne = value!;
+              //     });
+              //   },
+              // ),
+              CheckboxListTile(
+                title: const Text('Checkbox One'),
+                value: _checkBoxOne,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _checkBoxOne = value!;
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: const Text('Checkbox Two'),
+                value: _checkBoxTwo,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _checkBoxTwo = value!;
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: const Text('Checkbox Three'),
+                value: _checkBoxThree,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _checkBoxThree = value!;
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: const Text('Checkbox Four'),
+                value: _checkBoxFour,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _checkBoxFour = value!;
+                  });
+                },
+              ),
+            ],
+          ),
+          TableCalendar(
+            firstDay: DateTime(2020, 1, 1),
+            lastDay: DateTime(2022, 12, 31),
+            focusedDay: _focusedDay,
+            calendarFormat: _calendarFormat,
+            selectedDayPredicate: (day) {
+              // Use `selectedDayPredicate` to determine which day is currently selected.
+              // If this returns true, then `day` will be marked as selected.
+
+              // Using `isSameDay` is recommended to disregard
+              // the time-part of compared DateTime objects.
+              return isSameDay(_selectedDay, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              if (!isSameDay(_selectedDay, selectedDay)) {
+                // Call `setState()` when updating the selected day
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+              }
+            },
+            onFormatChanged: (format) {
+              if (_calendarFormat != format) {
+                // Call `setState()` when updating calendar format
+                setState(() {
+                  _calendarFormat = format;
+                });
+              }
+            },
+            onPageChanged: (focusedDay) {
+              // No need to call `setState()` here
+              _focusedDay = focusedDay;
             },
           ),
-        ],
-      ),
-      const Text(
-        'Index 1: Business',
-        style: optionStyle,
-      ),
-      const Text(
-        'Index 2: School',
-        style: optionStyle,
-      ),
-    ].elementAt(_selectedIndex),
+          const Text(
+            'Index 2: School',
+            style: optionStyle,
+          ),
+        ].elementAt(_selectedIndex),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Add your onPressed code here!
 
           // show the snackbar
-          
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
