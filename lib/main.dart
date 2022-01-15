@@ -1,5 +1,7 @@
 // ignore_for_file: unnecessary_const
 
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,7 +14,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseAuth auth = FirebaseAuth.instance;
 
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
@@ -244,26 +245,58 @@ class _MyHomePageState extends State<MyHomePage> {
             style: optionStyle,
           ),
           Center(
-              child: Row(
-            children: const [
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
               // Show uer's name
-              Text("Setting?")
-            ],
-          )
-              // child: FloatingActionButton(
-              //   child: const Text('Sign in'),
-              //   onPressed: () {
-              //     // Sign in with Google
-              //     signInWithGoogle().then((uc) {
-              //       userCredential = uc;
-              //       print(userCredential.user!.displayName);
-              //       print(userCredential.user!.email);
-              //       // print(userCredential.user!.photoUrl);
-              //       print(userCredential.user!.uid);
-              //     });
-              //   },
-              // ),
+              Text(
+                userCredential.user?.displayName ?? "",
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.secondary),
               ),
+              // Show user's email
+              Text(
+                userCredential.user?.email ?? "",
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.secondary),
+              ),
+              TextButton(
+                child: userCredential.user!.isAnonymous
+                    ? const Text("Sign in with Google")
+                    : const Text("Sign out"),
+                onPressed: () {
+                  if (userCredential.user!.isAnonymous) {
+                    signInWithGoogle().then((UserCredential userCredential) {
+                      setState(() {
+                        this.userCredential = userCredential;
+                        print(this.userCredential.user!.displayName);
+                        print(this.userCredential.user!.email);
+                        // print(userCredential.user!.photoUrl);
+                        print(this.userCredential.user!.uid);
+                      });
+                    });
+                  } else {
+                    // FirebaseAuth.instance.signOut();
+                    FirebaseAuth.instance
+                        .signInAnonymously()
+                        .then((value) {
+                      setState(() {
+                        this.userCredential = value;
+                        print(this.userCredential.user!.displayName);
+                        print(this.userCredential.user!.email);
+                        // print(userCredential.user!.photoUrl);
+                        print(this.userCredential.user!.uid);
+                      });
+                    });
+
+                    // Rebuild the widget after signing out
+                  }
+                },
+              ),
+            ],
+          )),
         ].elementAt(_selectedIndex),
       ),
       floatingActionButton: FloatingActionButton(
