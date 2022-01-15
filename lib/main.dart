@@ -70,6 +70,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late UserCredential userCredential;
+
   bool _checkBoxOne = false;
   bool _checkBoxTwo = false;
   bool _checkBoxThree = false;
@@ -106,20 +107,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    signInWithGoogle().then((uc) {
-      userCredential = uc;
-      print(userCredential.user!.displayName);
-      print(userCredential.user!.email);
-      // print(userCredential.user!.photoUrl);
-      print(userCredential.user!.uid);
+  void initState() {
+    super.initState();
+    signInWithGoogle().then((UserCredential userCredential) {
+      setState(() {
+        this.userCredential = userCredential;
+        print(this.userCredential.user!.displayName);
+        print(this.userCredential.user!.email);
+        // print(userCredential.user!.photoUrl);
+        print(this.userCredential.user!.uid);
+      });
     });
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
