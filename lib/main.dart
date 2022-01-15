@@ -5,12 +5,23 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseAuth auth = FirebaseAuth.instance;
+
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
+
   runApp(const MyApp());
 }
 
@@ -77,8 +88,30 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<UserCredential> signInWithGoogle() async {
+    // Create a new provider
+    GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+    // googleProvider.addScope(
+    //     'https://www.googleapis.com/auth/contacts.readonly');
+    // googleProvider
+    //     .setCustomParameters({'login_hint': 'user@example.com'});
+    print("sign in with google");
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithPopup(googleProvider);
+
+    // Or use signInWithRedirect
+    // return await FirebaseAuth.instance.signInWithRedirect(googleProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
+    UserCredential userCredential; 
+    GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+    googleProvider
+        .addScope('https://www.googleapis.com/auth/contacts.readonly');
+    googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -92,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
@@ -104,6 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.fastfood),
             label: 'Meals',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -200,6 +238,21 @@ class _MyHomePageState extends State<MyHomePage> {
           const Text(
             'Index 2: School',
             style: optionStyle,
+          ),
+          Center(
+            child: FloatingActionButton(
+              child: const Text('Sign in'),
+              onPressed: () {
+                // Sign in with Google
+                signInWithGoogle().then((uc) {
+                  userCredential = uc;
+                  print(userCredential.user!.displayName);
+                  print(userCredential.user!.email);
+                  // print(userCredential.user!.photoUrl);
+                  print(userCredential.user!.uid);
+                });
+              },
+            ),
           ),
         ].elementAt(_selectedIndex),
       ),
