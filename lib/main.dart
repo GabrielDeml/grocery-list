@@ -106,8 +106,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    UserCredential userCredential; 
+    UserCredential userCredential;
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+    signInWithGoogle().then((uc) {
+      userCredential = uc;
+      print(userCredential.user!.displayName);
+      print(userCredential.user!.email);
+      // print(userCredential.user!.photoUrl);
+      print(userCredential.user!.uid);
+    });
 
     googleProvider
         .addScope('https://www.googleapis.com/auth/contacts.readonly');
