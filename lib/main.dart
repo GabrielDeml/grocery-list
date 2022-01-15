@@ -268,26 +268,26 @@ class _MyHomePageState extends State<MyHomePage> {
                     : const Text("Sign out"),
                 onPressed: () {
                   if (userCredential.user!.isAnonymous) {
-                    signInWithGoogle().then((UserCredential userCredential) {
+                    signInWithGoogle().then((UserCredential user) {
                       setState(() {
-                        this.userCredential = userCredential;
-                        print(this.userCredential.user!.displayName);
-                        print(this.userCredential.user!.email);
+                        userCredential = user;
+                        print(userCredential.user!.displayName);
+                        print(userCredential.user!.email);
                         // print(userCredential.user!.photoUrl);
-                        print(this.userCredential.user!.uid);
+                        print(userCredential.user!.uid);
                       });
                     });
                   } else {
                     // FirebaseAuth.instance.signOut();
                     FirebaseAuth.instance
                         .signInAnonymously()
-                        .then((value) {
+                        .then((user) {
                       setState(() {
-                        this.userCredential = value;
-                        print(this.userCredential.user!.displayName);
-                        print(this.userCredential.user!.email);
+                        userCredential = user;
+                        print(userCredential.user!.displayName);
+                        print(userCredential.user!.email);
                         // print(userCredential.user!.photoUrl);
-                        print(this.userCredential.user!.uid);
+                        print(userCredential.user!.uid);
                       });
                     });
 
