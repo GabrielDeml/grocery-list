@@ -97,13 +97,29 @@ class _MyHomePageState extends State<MyHomePage> {
     // Create a new provider
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
+    FirebaseAuth.instance.getRedirectResult().then((UserCredential user) {
+      // Check for null user
+      if (user.user == null) {
+        // Sign in with Google
+        return FirebaseAuth.instance.signInWithRedirect(
+          googleProvider,
+        );
+      } else {
+        // User is signed in
+        print('User is signed in');
+      }
+    });
+
+    // Check if the user is already signed in
+
     // googleProvider.addScope(
     //     'https://www.googleapis.com/auth/contacts.readonly');
     // googleProvider
     //     .setCustomParameters({'login_hint': 'user@example.com'});
     print("sign in with google");
     // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithPopup(googleProvider);
+    FirebaseAuth.instance.signInWithRedirect(googleProvider);
+    return FirebaseAuth.instance.getRedirectResult();
 
     // Or use signInWithRedirect
     // return await FirebaseAuth.instance.signInWithRedirect(googleProvider);
@@ -140,8 +156,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return !isUserCredentialSet 
-        ? const Center(child: Text("Please sign in", style: TextStyle(fontSize: 30, color: Colors.green)))
+    return !isUserCredentialSet
+        ? const Center(
+            child: Text("Please sign in",
+                style: TextStyle(fontSize: 30, color: Colors.green)))
         : Scaffold(
             appBar: AppBar(
               // Here we take the value from the MyHomePage object that was created by
